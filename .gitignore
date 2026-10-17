@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local persistent database
+/.data/
+/data/
+*.db.json
+*.tmp.*
+
