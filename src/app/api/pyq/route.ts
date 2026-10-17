@@ -1,6 +1,7 @@
-// API: Get official CBSE PYQ catalog
 import { NextResponse } from 'next/server';
 import { pyqService } from '@/lib/pyq-service';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {

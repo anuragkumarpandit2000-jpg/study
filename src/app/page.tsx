@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 import { PyqCatalogModal } from '@/components/PyqCatalogModal';
 
+import { ConceptMasterLogo } from '@/components/ConceptMasterLogo';
+
 export default function HomePage() {
   const router = useRouter();
 
@@ -168,8 +170,11 @@ Q2. रचना के आधार पर वाक्य का भेद प
   return (
     <div className="space-y-10">
       {/* Hero Section */}
-      <div className="text-center max-w-3xl mx-auto pt-4 pb-2 space-y-3">
-        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold uppercase tracking-wider">
+      <div className="text-center max-w-3xl mx-auto pt-2 pb-2 space-y-3">
+        <div className="flex justify-center mb-1">
+          <ConceptMasterLogo size="lg" showText={false} />
+        </div>
+        <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-xs font-bold uppercase tracking-wider shadow-2xs">
           <Sparkles className="w-3.5 h-3.5 text-blue-600" />
           <span>CBSE Class 10 Board Assessment Mastery</span>
         </div>

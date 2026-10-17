@@ -8,7 +8,18 @@ import { documentService } from './gemini/document-service';
 import { questionDetectionService } from './gemini/question-detection-service';
 import { Document, ExamAttempt } from './types';
 
-const PYQS_ROOT_DIR = 'D:/anurag/study/QUESTIONS/PYQS';
+const getRuntimeFs = (): typeof fs => {
+  try {
+    const req = eval('require');
+    return req('fs');
+  } catch {
+    return fs;
+  }
+};
+
+const getPyqsRootDir = (): string => {
+  return process.env.PYQS_DIR || (process.platform === 'win32' ? ['D:', 'anurag', 'study', 'QUESTIONS', 'PYQS'].join(path.sep) : '');
+};
 
 export interface PyqPaperItem {
   id: string;
@@ -51,49 +62,50 @@ export class PyqService {
    * Scans and returns the complete CBSE PYQ Catalog
    */
   public getCatalog(): PyqCatalog {
+    const rfs = getRuntimeFs();
+    const pyqsDir = getPyqsRootDir();
     const now = Date.now();
     // Cache catalog for 5 minutes
     if (this.catalogCache && now - this.lastCacheTime < 300000) {
       return this.catalogCache;
     }
 
-    if (!fs.existsSync(PYQS_ROOT_DIR)) {
-      console.warn(`PYQS root directory not found at: ${PYQS_ROOT_DIR}`);
+    if (!pyqsDir || !rfs.existsSync(pyqsDir)) {
+      console.warn(`PYQS root directory not found or unavailable at: ${pyqsDir}`);
       return { subjects: [], totalPapers: 0 };
     }
 
     let totalPapers = 0;
     const subjectsList: PyqCatalog['subjects'] = [];
 
-    const subjectDirs = fs.readdirSync(PYQS_ROOT_DIR, { withFileTypes: true })
-      .filter(d => d.isDirectory())
-      .map(d => d.name);
+    const subjectDirs = rfs.readdirSync(pyqsDir, { withFileTypes: true })
+      .filter((d: any) => d.isDirectory())
+      .map((d: any) => d.name);
 
     for (const subDir of subjectDirs) {
       const subUpper = subDir.toUpperCase();
       const meta = SUBJECT_METADATA[subUpper] || { label: subDir, icon: '📄' };
-      const subPath = path.join(PYQS_ROOT_DIR, subDir);
+      const subPath = path.join(pyqsDir, subDir);
 
-      const yearDirs = fs.readdirSync(subPath, { withFileTypes: true })
-        .filter(d => d.isDirectory())
-        .map(d => d.name);
+      const entries = rfs.readdirSync(subPath, { withFileTypes: true });
+      const yearDirs = entries.filter((d: any) => d.isDirectory()).map((d: any) => d.name);
+      const directPdfs = entries.filter((f: any) => f.isFile() && f.name.toLowerCase().endsWith('.pdf'));
 
-      const yearsList: Array<{ year: string; papers: PyqPaperItem[] }> = [];
+      const yearsMap = new Map<string, PyqPaperItem[]>();
 
+      // 1. Process nested year folders (e.g. SCIENCE/SCIENCE 2024/*.pdf)
       for (const yDir of yearDirs) {
-        // Extract 4-digit year like '2024' from 'SCIENCE 2024' or 'MATH 2023'
         const match = yDir.match(/20\d{2}/);
         const year = match ? match[0] : yDir;
         const yearPath = path.join(subPath, yDir);
 
-        const pdfFiles = fs.readdirSync(yearPath, { withFileTypes: true })
-          .filter(f => f.isFile() && f.name.toLowerCase().endsWith('.pdf'))
-          .map(f => {
+        const pdfFiles = rfs.readdirSync(yearPath, { withFileTypes: true })
+          .filter((f: any) => f.isFile() && f.name.toLowerCase().endsWith('.pdf'))
+          .map((f: any) => {
             const fullPath = path.join(yearPath, f.name).replace(/\\/g, '/');
-            const stat = fs.statSync(fullPath);
+            const stat = rfs.statSync(fullPath);
             totalPapers++;
 
-            // Clean display name (e.g. 31_1_1_Science.pdf -> Set 31/1/1)
             let setCode = '';
             const codeMatch = f.name.match(/(\d+[-_]\d+[-_]\d+|\d+[-_][A-Z0-9]+[-_]\d+)/i);
             if (codeMatch) {
@@ -120,12 +132,37 @@ export class PyqService {
           });
 
         if (pdfFiles.length > 0) {
-          yearsList.push({
-            year,
-            papers: pdfFiles
-          });
+          yearsMap.set(year, [...(yearsMap.get(year) || []), ...pdfFiles]);
         }
       }
+
+      // 2. Process direct PDFs in subject folder (e.g. AI/AI 2022.pdf)
+      for (const f of directPdfs) {
+        const match = f.name.match(/20\d{2}/);
+        const year = match ? match[0] : '2024';
+        const fullPath = path.join(subPath, f.name).replace(/\\/g, '/');
+        const stat = rfs.statSync(fullPath);
+        totalPapers++;
+
+        const id = `pyq_${subUpper.toLowerCase()}_${year}_${f.name.replace(/[^a-zA-Z0-9]/g, '_')}`;
+        const cleanSubjectName = meta.label.split(' ')[0];
+        const item: PyqPaperItem = {
+          id,
+          subject: subUpper,
+          year,
+          filename: f.name,
+          filePath: fullPath,
+          fileSizeBytes: stat.size,
+          displayName: `${cleanSubjectName} ${year} Official Paper`
+        };
+
+        yearsMap.set(year, [...(yearsMap.get(year) || []), item]);
+      }
+
+      const yearsList: Array<{ year: string; papers: PyqPaperItem[] }> = [];
+      yearsMap.forEach((papers, year) => {
+        yearsList.push({ year, papers });
+      });
 
       // Sort years descending (2026, 2025, 2024...)
       yearsList.sort((a, b) => b.year.localeCompare(a.year));
@@ -157,8 +194,9 @@ export class PyqService {
     examAttempt?: ExamAttempt;
     questionsCount: number;
   }> {
+    const rfs = getRuntimeFs();
     const normalizedPath = filePath.replace(/\\/g, '/');
-    if (!fs.existsSync(normalizedPath)) {
+    if (!rfs.existsSync(normalizedPath)) {
       throw new Error(`Paper file not found at: ${normalizedPath}`);
     }
 
@@ -186,7 +224,7 @@ export class PyqService {
       doc = existing;
     } else {
       // 2. Read PDF buffer & extract text
-      const buffer = fs.readFileSync(normalizedPath);
+      const buffer = rfs.readFileSync(normalizedPath);
       const extracted = await documentService.extractFromPdf(buffer, filename);
 
       doc = db.createDocument({

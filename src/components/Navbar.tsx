@@ -6,6 +6,8 @@ import { usePathname } from 'next/navigation';
 import { BookOpen, FileText, Target, BarChart2, Settings, Sparkles, GraduationCap } from 'lucide-react';
 import { PyqCatalogModal } from './PyqCatalogModal';
 
+import { ConceptMasterLogo } from './ConceptMasterLogo';
+
 export const Navbar: React.FC = () => {
   const pathname = usePathname();
   const [isPyqModalOpen, setIsPyqModalOpen] = useState(false);
@@ -24,17 +26,8 @@ export const Navbar: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo & Brand */}
-            <Link href="/" className="flex items-center space-x-3 group">
-              <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm group-hover:bg-blue-700 transition">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="flex items-center space-x-2">
-                  <span className="font-bold text-lg text-gray-900 tracking-tight">CONCEPT MASTER AI</span>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-medium">CBSE 10</span>
-                </div>
-                <p className="text-xs text-gray-500 hidden sm:block">Understand Every Question. Master Every Concept.</p>
-              </div>
+            <Link href="/" className="cursor-pointer">
+              <ConceptMasterLogo size="md" />
             </Link>
 
             {/* Right navigation & PYQ Quick Action */}

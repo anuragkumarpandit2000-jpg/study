@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a" />
+      <stop offset="50%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+    <linearGradient id="cyanGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="#1d4ed8" flood-opacity="0.5" />
+    </filter>
+  </defs>
+
+  <rect x="24" y="24" width="464" height="464" rx="112" fill="url(#bgGrad)" filter="url(#glow)" />
+  <rect x="26" y="26" width="460" height="460" rx="110" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="4" />
+
+  <g opacity="0.2" stroke="#ffffff" stroke-width="2" fill="none">
+    <circle cx="256" cy="256" r="140" stroke-dasharray="8 6" />
+    <circle cx="256" cy="256" r="80" />
+    <line x1="256" y1="116" x2="256" y2="396" stroke-dasharray="4 4" />
+    <line x1="116" y1="256" x2="396" y2="256" stroke-dasharray="4 4" />
+  </g>
+
+  <!-- The Graduation Cap Diamond Crest -->
+  <polygon points="256,128 384,186 256,244 128,186" fill="url(#cyanGrad)" filter="url(#glow)" />
+  <polygon points="256,134 374,186 256,238 138,186" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.6" />
+
+  <!-- Cap Base & Neck -->
+  <path d="M172,210 L172,274 C172,320 256,340 256,340 C256,340 340,320 340,274 L340,210 L256,248 Z" fill="#1e40af" />
+  <path d="M178,214 L178,272 C178,310 256,328 256,328 C256,328 334,310 334,272 L334,214" fill="none" stroke="#60a5fa" stroke-width="5" />
+
+  <!-- Tassel Ribbon & Gem -->
+  <path d="M384,186 Q400,240 396,280" fill="none" stroke="url(#goldGrad)" stroke-width="8" stroke-linecap="round" />
+  <circle cx="396" cy="286" r="10" fill="url(#goldGrad)" />
+
+  <!-- "CM" Lettering Monogram interwoven -->
+  <path d="M210,344 C160,344 140,300 140,260 C140,220 160,180 210,180" fill="none" stroke="#ffffff" stroke-width="14" stroke-linecap="round" opacity="0.9" />
+
+  <!-- Star of Genius / Mastery Crown -->
+  <g transform="translate(256, 128)">
+    <polygon points="0,-36 9,-11 34,-11 14,5 21,30 0,15 -21,30 -14,5 -34,-11 -9,-11" fill="url(#goldGrad)" />
+    <circle cx="0" cy="0" r="4" fill="#ffffff" />
+  </g>
+
+  <!-- Glowing Nodes of Deep Analysis -->
+  <circle cx="160" cy="380" r="12" fill="#38bdf8" />
+  <circle cx="256" cy="410" r="15" fill="url(#goldGrad)" />
+  <circle cx="352" cy="380" r="12" fill="#38bdf8" />
+  <line x1="172" y1="380" x2="241" y2="408" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.6" />
+  <line x1="271" y1="408" x2="340" y2="380" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.6" />
+</svg>

@@ -33,6 +33,7 @@
     "eslint-config-next": "16.4.2",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vercel": "^64.5.0"
   }
 }

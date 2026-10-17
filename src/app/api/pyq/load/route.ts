@@ -1,6 +1,7 @@
-// API: Load a chosen PYQ paper for Exam or Practice
 import { NextRequest, NextResponse } from 'next/server';
 import { pyqService } from '@/lib/pyq-service';
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {

@@ -39,7 +39,7 @@ class DatabaseService {
 
   constructor() {
     const rawPath = process.env.DATABASE_PATH || './.data/concept_master.db.json';
-    this.filePath = path.isAbsolute(rawPath) ? rawPath : path.join(process.cwd(), rawPath);
+    this.filePath = path.isAbsolute(rawPath) ? rawPath : path.join(/*turbopackIgnore: true*/ process.cwd(), rawPath);
     const dir = path.dirname(this.filePath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
